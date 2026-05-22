@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zumra – Database ERD</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1f2937;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+
+      --blue: #58a6ff;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --purple: #a371f7;
+      --red: #f85149;
+      --orange: #f0883e;
+
+      --col-pk: var(--yellow);
+      --col-fk: var(--green);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+    }
+
+    /* ── HEADER ─────────────────── */
+    header {
+      background: linear-gradient(135deg, #1f2937, #111827);
+      border-bottom: 1px solid var(--border);
+      padding: 24px 40px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      box-shadow: 0 0 20px rgba(88, 166, 255, .35);
+      flex-shrink: 0;
+    }
+
+    header h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header p {
+      color: var(--muted);
+      font-size: .82rem;
+      margin-top: 3px;
+    }
+
+    /* ── STATS BAR ──────────────── */
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 14px 40px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .chip {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 13px;
+      font-size: .78rem;
+      color: var(--muted);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    /* ── LEGEND ─────────────────── */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 12px 40px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      font-size: .78rem;
+      color: var(--muted);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-pk {
+      color: var(--yellow);
+      font-weight: 700;
+      font-size: .7rem;
+    }
+
+    .badge-fk {
+      color: var(--green);
+      font-weight: 700;
+      font-size: .7rem;
+    }
+
+    /* ── DOMAIN SECTION ─────────── */
+    .domain-section {
+      padding: 32px 40px 16px;
+    }
+
+    .domain-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .domain-icon {
+      font-size: 1.2rem;
+    }
+
+    .domain-header h2 {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .domain-count {
+      font-size: .72rem;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2px 9px;
+    }
+
+    /* ── ENTITY CARDS GRID ──────── */
+    .entity-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    /* ── ENTITY CARD ────────────── */
+    .entity {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .entity:hover {
+      border-color: var(--accent-color, var(--blue));
+      box-shadow: 0 0 0 1px var(--accent-color, var(--blue)) inset;
+    }
+
+    .entity-head {
+      padding: 10px 14px;
+      font-size: .85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .entity-head .table-name {
+      flex: 1;
+    }
+
+    .entity-head .domain-badge {
+      font-size: .68rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+
+    /* domain colours */
+    .d-auth {
+      --accent-color: var(--blue);
+    }
+
+    .d-auth .entity-head {
+      background: rgba(88, 166, 255, .1);
+      color: var(--blue);
+    }
+
+    .d-auth .domain-badge {
+      background: rgba(88, 166, 255, .15);
+      color: var(--blue);
+    }
+
+    .d-facility {
+      --accent-color: var(--purple);
+    }
+
+    .d-facility .entity-head {
+      background: rgba(163, 113, 247, .1);
+      color: var(--purple);
+    }
+
+    .d-facility .domain-badge {
+      background: rgba(163, 113, 247, .15);
+      color: var(--purple);
+    }
+
+    .d-course {
+      --accent-color: var(--green);
+    }
+
+    .d-course .entity-head {
+      background: rgba(63, 185, 80, .1);
+      color: var(--green);
+    }
+
+    .d-course .domain-badge {
+      background: rgba(63, 185, 80, .15);
+      color: var(--green);
+    }
+
+    .d-content {
+      --accent-color: var(--yellow);
+    }
+
+    .d-content .entity-head {
+      background: rgba(210, 153, 34, .1);
+      color: var(--yellow);
+    }
+
+    .d-content .domain-badge {
+      background: rgba(210, 153, 34, .15);
+      color: var(--yellow);
+    }
+
+    .d-payment {
+      --accent-color: var(--red);
+    }
+
+    .d-payment .entity-head {
+      background: rgba(248, 81, 73, .1);
+      color: var(--red);
+    }
+
+    .d-payment .domain-badge {
+      background: rgba(248, 81, 73, .15);
+      color: var(--red);
+    }
+
+    /* ── FIELD TABLE inside card ── */
+    .field-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .field-table td {
+      padding: 6px 14px;
+      border-bottom: 1px solid #1c2230;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .field-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .field-table tr:hover td {
+      background: rgba(255, 255, 255, .03);
+    }
+
+    .col-badge {
+      width: 28px;
+    }
+
+    .col-name {
+      color: var(--text);
+      font-size: .82rem;
+    }
+
+    .col-type {
+      color: var(--purple);
+      font-family: 'Courier New', monospace;
+      font-size: .75rem;
+      background: rgba(163, 113, 247, .08);
+      border-radius: 4px;
+      padding: 1px 6px;
+      text-align: right;
+    }
+
+    .col-ref {
+      color: var(--muted);
+      font-size: .72rem;
+      text-align: right;
+    }
+
+    .pk {
+      color: var(--yellow);
+      font-size: .65rem;
+      font-weight: 700;
+    }
+
+    .fk {
+      color: var(--green);
+      font-size: .65rem;
+      font-weight: 700;
+    }
+
+    .nullable {
+      opacity: .5;
+    }
+
+    /* ── RELATIONSHIPS TABLE ─────── */
+    .rel-section {
+      padding: 32px 40px 48px;
+    }
+
+    .rel-section h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--blue);
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .rel-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .82rem;
+    }
+
+    .rel-table thead tr {
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .rel-table thead td {
+      padding: 10px 14px;
+    }
+
+    .rel-table tbody tr {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .rel-table tbody tr:hover {
+      background: rgba(255, 255, 255, .02);
+    }
+
+    .rel-table tbody td {
+      padding: 9px 14px;
+      color: var(--text);
+    }
+
+    .rel-from {
+      color: var(--blue);
+      font-weight: 500;
+    }
+
+    .rel-to {
+      color: var(--green);
+      font-weight: 500;
+    }
+
+    .rel-type {
+      font-size: .72rem;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .rt-1m {
+      background: rgba(88, 166, 255, .12);
+      color: var(--blue);
+    }
+
+    .rt-11 {
+      background: rgba(63, 185, 80, .12);
+      color: var(--green);
+    }
+
+    .rt-m1 {
+      background: rgba(210, 153, 34, .12);
+      color: var(--yellow);
+    }
+
+    .rel-fk {
+      color: var(--muted);
+      font-size: .78rem;
+      font-family: monospace;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--muted);
+      font-size: .75rem;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">Z</div>
+    <div>
+      <h1>Zumra – Database ERD</h1>
+      <p>Full schema · 20 tables · 5 domains</p>
+    </div>
+  </header>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="chip"><span class="dot" style="background:var(--blue)"></span>Auth &amp; Users</div>
+    <div class="chip"><span class="dot" style="background:var(--purple)"></span>Facility</div>
+    <div class="chip"><span class="dot" style="background:var(--green)"></span>Course</div>
+    <div class="chip"><span class="dot" style="background:var(--yellow)"></span>Content</div>
+    <div class="chip"><span class="dot" style="background:var(--red)"></span>Payment</div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-item"><span class="badge-pk">PK</span> Primary Key</div>
+    <div class="legend-item"><span class="badge-fk">FK</span> Foreign Key</div>
+    <div class="legend-item"><span style="opacity:.5">Field</span> Nullable</div>
+  </div>
+
+
+  <!-- ═══════════ DOMAIN: AUTH ═══════════ -->
+  <div class="domain-section">
+    <div class="domain-header">
+      <span class="domain-icon">🔵</span>
+      <h2>Auth &amp; Users</h2>
+      <span class="domain-count">3 tables</span>
+    </div>
+    <div class="entity-grid">
+
+      <!-- ApplicationUser -->
+      <div class="entity d-auth">
+        <div class="entity-head">
+          <span class="table-name">👤 ApplicationUser</span>
+          <span class="domain-badge">Auth</span>
+        </div>
+        <table class="field-table">
+          <tr>
+            <td class="col-badge"><span class="pk">PK</span></td>
+            <td class="col-name">Id</td>
+            <td class="col-type">string</td>
+            <td class="col-ref">IdentityUser</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Name</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Email</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">UserName</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">TotalCarts</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name nullable">ImageId</td>
+            <td class="col-type nullable">int?</td>
+            <td class="col-ref">→ UserImage</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- UserImage -->
+      <div class="entity d-auth">
+        <div class="entity-head">
+          <span class="table-name">🖼 UserImage</span>
+          <span class="domain-badge">Auth</span>
+        </div>
+        <table class="field-table">
+          <tr>
+            <td class="col-badge"><span class="pk">PK</span></td>
+            <td class="col-name">Id</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">ImageZone</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">ImagePath</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">ImageName</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Otp -->
+      <div class="entity d-auth">
+        <div class="entity-head">
+          <span class="table-name">🔐 Otp</span>
+          <span class="domain-badge">Auth</span>
+        </div>
+        <table class="field-table">
+          <tr>
+            <td class="col-badge"><span class="pk">PK</span></td>
+            <td class="col-name">Id</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Email</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">OtpCode</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Expiration</td>
+            <td class="col-type">DateTime</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">IsUsed</td>
+            <td class="col-type">bool</td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+
+    </div><!-- /entity-grid -->
+  </div>
+
+
+  <!-- ═══════════ DOMAIN: FACILITY ═══════════ -->
+  <div class="domain-section">
+    <div class="domain-header">
+      <span class="domain-icon">🟣</span>
+      <h2>Facility</h2>
+      <span class="domain-count">4 tables</span>
+    </div>
+    <div class="entity-grid">
+
+      <!-- Category -->
+      <div class="entity d-facility">
+        <div class="entity-head">
+          <span class="table-name">🏷 Category</span>
+          <span class="domain-badge">Facility</span>
+        </div>
+        <table class="field-table">
+          <tr>
+            <td class="col-badge"><span class="pk">PK</span></td>
+            <td class="col-name">Id</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Name</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Description</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">ImageZone</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">ImagePath</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">ImageName</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name nullable">ImageUrl</td>
+            <td class="col-type nullable">string?</td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Facility -->
+      <div class="entity d-facility">
+        <div class="entity-head">
+          <span class="table-name">🏢 Facility</span>
+          <span class="domain-badge">Facility</span>
+        </div>
+        <table class="field-table">
+          <tr>
+            <td class="col-badge"><span class="pk">PK</span></td>
+            <td class="col-name">Id</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Name</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Description</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Type</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">ImageZone</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">ImagePath</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name nullable">ImageName</td>
+            <td class="col-type nullable">string?</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name nullable">ImageUrl</td>
+            <td class="col-type nullable">string?</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Status</td>
+            <td class="col-type">string</td>
+            <td class="col-ref">Pending…</td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">CategoryId</td>
+            <td class="col-type">int</td>
+            <td class="col-ref">→ Category</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Group -->
+      <div class="entity d-facility">
+        <div class="entity-head">
+          <span class="table-name">👥 Group</span>
+          <span class="domain-badge">Facility</span>
+        </div>
+        <table class="field-table">
+          <tr>
+            <td class="col-badge"><span class="pk">PK</span></td>
+            <td class="col-name">Id</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Name</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Description</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">FacilityId</td>
+            <td class="col-type">int</td>
+            <td class="col-ref">→ Facility</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- UserFacility -->
+      <div class="entity d-facility">
+        <div class="entity-head">
+          <span class="table-name">🔗 UserFacility</span>
+          <span class="domain-badge">Facility</span>
+        </div>
+        <table class="field-table">
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">UserId</td>
+            <td class="col-type">string</td>
+            <td class="col-ref">→ ApplicationUser</td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">FacilityId</td>
+            <td class="col-type">int</td>
+            <td class="col-ref">→ Facility</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Role</td>
+            <td class="col-type">FacilityRole</td>
+            <td class="col-ref">enum</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">CreatedAt</td>
+            <td class="col-type">DateTime</td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ═══════════ DOMAIN: COURSE ═══════════ -->
+  <div class="domain-section">
+    <div class="domain-header">
+      <span class="domain-icon">🟢</span>
+      <h2>Course</h2>
+      <span class="domain-count">3 tables</span>
+    </div>
+    <div class="entity-grid">
+
+      <!-- Course -->
+      <div class="entity d-course">
+        <div class="entity-head">
+          <span class="table-name">📚 Course</span>
+          <span class="domain-badge">Course</span>
+        </div>
+        <table class="field-table">
+          <tr>
+            <td class="col-badge"><span class="pk">PK</span></td>
+            <td class="col-name">Id</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Name</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Description</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Cost</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Type</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">CreatedAt</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">ImageZone</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">ImagePath</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">ImageName</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name nullable">ImageUrl</td>
+            <td class="col-type nullable">string?</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">GroupId</td>
+            <td class="col-type">int</td>
+            <td class="col-ref">→ Group</td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">FacilityId</td>
+            <td class="col-type">int</td>
+            <td class="col-ref">→ Facility</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- CourseBatches -->
+      <div class="entity d-course">
+        <div class="entity-head">
+          <span class="table-name">📦 CourseBatches</span>
+          <span class="domain-badge">Course</span>
+        </div>
+        <table class="field-table">
+          <tr>
+            <td class="col-badge"><span class="pk">PK</span></td>
+            <td class="col-name">Id</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">CourseId</td>
+            <td class="col-type">int</td>
+            <td class="col-ref">→ Course</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Title</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">StartDate</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">EndDate</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name nullable">Capacity</td>
+            <td class="col-type nullable">int?</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Status</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Enrollments -->
+      <div class="entity d-course">
+        <div class="entity-head">
+          <span class="table-name">📝 Enrollments</span>
+          <span class="domain-badge">Course</span>
+        </div>
+        <table class="field-table">
+          <tr>
+            <td class="col-badge"><span class="pk">PK</span></td>
+            <td class="col-name">Id</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">UserId</td>
+            <td class="col-type">string</td>
+            <td class="col-ref">→ ApplicationUser</td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">CourseBatchId</td>
+            <td class="col-type">int</td>
+            <td class="col-ref">→ CourseBatches</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name nullable">AccessType</td>
+            <td class="col-type nullable">string?</td>
+            <td class="col-ref">Free/Paid/Grant</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Status</td>
+            <td class="col-type">string</td>
+            <td class="col-ref">Active/Expired…</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name nullable">CreatedAt</td>
+            <td class="col-type nullable">DateTime?</td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ═══════════ DOMAIN: CONTENT ═══════════ -->
+  <div class="domain-section">
+    <div class="domain-header">
+      <span class="domain-icon">🟡</span>
+      <h2>Content</h2>
+      <span class="domain-count">7 tables</span>
+    </div>
+    <div class="entity-grid">
+
+      <!-- Sections -->
+      <div class="entity d-content">
+        <div class="entity-head">
+          <span class="table-name">📂 Sections</span>
+          <span class="domain-badge">Content</span>
+        </div>
+        <table class="field-table">
+          <tr>
+            <td class="col-badge"><span class="pk">PK</span></td>
+            <td class="col-name">Id</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Name</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Order</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">CourseId</td>
+            <td class="col-type">int</td>
+            <td class="col-ref">→ Course</td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">CourseBatchId</td>
+            <td class="col-type">int</td>
+            <td class="col-ref">→ CourseBatches</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Lessons -->
+      <div class="entity d-content">
+        <div class="entity-head">
+          <span class="table-name">🎓 Lessons</span>
+          <span class="domain-badge">Content</span>
+        </div>
+        <table class="field-table">
+          <tr>
+            <td class="col-badge"><span class="pk">PK</span></td>
+            <td class="col-name">Id</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Name</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Description</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Type</td>
+            <td class="col-type">string</td>
+            <td class="col-ref">Live/Recorded/Material</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Order</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">CreatedAt</td>
+            <td class="col-type">DateTime</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">CourseId</td>
+            <td class="col-type">int</td>
+            <td class="col-ref">→ Course</td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">CourseBatchId</td>
+            <td class="col-type">int</td>
+            <td class="col-ref">→ CourseBatches</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">CourseContentId</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name nullable">MeetingId</td>
+            <td class="col-type nullable">int?</td>
+            <td class="col-ref">→ LessonLive</td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name nullable">VideoId</td>
+            <td class="col-type nullable">int?</td>
+            <td class="col-ref">→ LessonRec</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- LessonLive -->
+      <div class="entity d-content">
+        <div class="entity-head">
+          <span class="table-name">📡 LessonLive</span>
+          <span class="domain-badge">Content</span>
+        </div>
+        <table class="field-table">
+          <tr>
+            <td class="col-badge"><span class="pk">PK</span></td>
+            <td class="col-name">Id</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">StartTime</td>
+            <td class="col-type">DateTime</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">EndTime</td>
+            <td class="col-type">DateTime</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">MeetingUrl</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">RoomName</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- LessonRec -->
+      <div class="entity d-content">
+        <div class="entity-head">
+          <span class="table-name">🎥 LessonRec</span>
+          <span class="domain-badge">Content</span>
+        </div>
+        <table class="field-table">
+          <tr>
+            <td class="col-badge"><span class="pk">PK</span></td>
+            <td class="col-name">Id</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">VideoUrl</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Duration</td>
+            <td class="col-type">float</td>
+            <td class="col-ref">in minutes</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name nullable">VideoSize</td>
+            <td class="col-type nullable">long?</td>
+            <td class="col-ref">in bytes</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name nullable">VideoFormat</td>
+            <td class="col-type nullable">string?</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name nullable">VideoQuality</td>
+            <td class="col-type nullable">string?</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name nullable">UploadedAt</td>
+            <td class="col-type nullable">DateTime?</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">IsProcessed</td>
+            <td class="col-type">bool</td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Tasks -->
+      <div class="entity d-content">
+        <div class="entity-head">
+          <span class="table-name">✅ Tasks</span>
+          <span class="domain-badge">Content</span>
+        </div>
+        <table class="field-table">
+          <tr>
+            <td class="col-badge"><span class="pk">PK</span></td>
+            <td class="col-name">Id</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">SectionId</td>
+            <td class="col-type">int</td>
+            <td class="col-ref">→ Sections</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Title</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Description</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Type</td>
+            <td class="col-type">string</td>
+            <td class="col-ref">Assignment/Quiz/Practice</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name nullable">FormUrl</td>
+            <td class="col-type nullable">string?</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">MaxScore</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Deadline</td>
+            <td class="col-type">DateTime</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">CourseContentId</td>
+            <td class="col-type">int</td>
+            <td class="col-ref">→ CourseContent</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- TaskSubmissions -->
+      <div class="entity d-content">
+        <div class="entity-head">
+          <span class="table-name">📤 TaskSubmissions</span>
+          <span class="domain-badge">Content</span>
+        </div>
+        <table class="field-table">
+          <tr>
+            <td class="col-badge"><span class="pk">PK</span></td>
+            <td class="col-name">Id</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">TaskId</td>
+            <td class="col-type">int</td>
+            <td class="col-ref">→ Tasks</td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">UserId</td>
+            <td class="col-type">string</td>
+            <td class="col-ref">→ ApplicationUser</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">SubmissionUrl</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">SubmissionAt</td>
+            <td class="col-type">DateTime</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Status</td>
+            <td class="col-type">string</td>
+            <td class="col-ref">Submitted/Late</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- CourseContent -->
+      <div class="entity d-content">
+        <div class="entity-head">
+          <span class="table-name">🗂 CourseContent</span>
+          <span class="domain-badge">Content</span>
+        </div>
+        <table class="field-table">
+          <tr>
+            <td class="col-badge"><span class="pk">PK</span></td>
+            <td class="col-name">Id</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">CourseId</td>
+            <td class="col-type">int</td>
+            <td class="col-ref">→ Course</td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">CourseBatchId</td>
+            <td class="col-type">int</td>
+            <td class="col-ref">→ CourseBatches</td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">SectionId</td>
+            <td class="col-type">int</td>
+            <td class="col-ref">→ Sections</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">ContentType</td>
+            <td class="col-type">string</td>
+            <td class="col-ref">Lesson / Task</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name nullable">ContentId</td>
+            <td class="col-type nullable">int?</td>
+            <td class="col-ref">polymorphic</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">CourseOrder</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ═══════════ DOMAIN: PAYMENT ═══════════ -->
+  <div class="domain-section">
+    <div class="domain-header">
+      <span class="domain-icon">🔴</span>
+      <h2>Payment</h2>
+      <span class="domain-count">3 tables</span>
+    </div>
+    <div class="entity-grid">
+
+      <!-- PayFac -->
+      <div class="entity d-payment">
+        <div class="entity-head">
+          <span class="table-name">💳 PayFac</span>
+          <span class="domain-badge">Payment</span>
+        </div>
+        <table class="field-table">
+          <tr>
+            <td class="col-badge"><span class="pk">PK</span></td>
+            <td class="col-name">Id</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">UserId</td>
+            <td class="col-type">string</td>
+            <td class="col-ref">→ ApplicationUser</td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">FacilityId</td>
+            <td class="col-type">int</td>
+            <td class="col-ref">→ Facility</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Status</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">PaymentDate</td>
+            <td class="col-type">DateTime</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">StripeSessionId</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Amount</td>
+            <td class="col-type">decimal</td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Cart -->
+      <div class="entity d-payment">
+        <div class="entity-head">
+          <span class="table-name">🛒 Cart</span>
+          <span class="domain-badge">Payment</span>
+        </div>
+        <table class="field-table">
+          <tr>
+            <td class="col-badge"><span class="pk">PK</span></td>
+            <td class="col-name">Id</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name">UserId</td>
+            <td class="col-type">string</td>
+            <td class="col-ref">→ ApplicationUser</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">BookId</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Quantity</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">TotalPrice</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-badge"><span class="fk">FK</span></td>
+            <td class="col-name nullable">CouponId</td>
+            <td class="col-type nullable">int?</td>
+            <td class="col-ref">→ Coupon</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Coupon -->
+      <div class="entity d-payment">
+        <div class="entity-head">
+          <span class="table-name">🎟 Coupon</span>
+          <span class="domain-badge">Payment</span>
+        </div>
+        <table class="field-table">
+          <tr>
+            <td class="col-badge"><span class="pk">PK</span></td>
+            <td class="col-name">Id</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">Code</td>
+            <td class="col-type">string</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">DiscountAmount</td>
+            <td class="col-type">int</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">ExpiryDate</td>
+            <td class="col-type">DateTime</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-name">IsActive</td>
+            <td class="col-type">bool</td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ═══════════ RELATIONSHIPS SUMMARY ═══════════ -->
+  <div class="rel-section">
+    <h2>🔗 Relationships</h2>
+    <table class="rel-table">
+      <thead>
+        <tr>
+          <td>From</td>
+          <td>To</td>
+          <td>Type</td>
+          <td>Foreign Key</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="rel-from">ApplicationUser</td>
+          <td class="rel-to">UserImage</td>
+          <td><span class="rel-type rt-m1">Many → One</span></td>
+          <td class="rel-fk">ApplicationUser.ImageId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">ApplicationUser</td>
+          <td class="rel-to">UserFacility</td>
+          <td><span class="rel-type rt-1m">One → Many</span></td>
+          <td class="rel-fk">UserFacility.UserId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">ApplicationUser</td>
+          <td class="rel-to">Enrollments</td>
+          <td><span class="rel-type rt-1m">One → Many</span></td>
+          <td class="rel-fk">Enrollments.UserId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">ApplicationUser</td>
+          <td class="rel-to">TaskSubmissions</td>
+          <td><span class="rel-type rt-1m">One → Many</span></td>
+          <td class="rel-fk">TaskSubmissions.UserId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">ApplicationUser</td>
+          <td class="rel-to">PayFac</td>
+          <td><span class="rel-type rt-1m">One → Many</span></td>
+          <td class="rel-fk">PayFac.UserId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">ApplicationUser</td>
+          <td class="rel-to">Cart</td>
+          <td><span class="rel-type rt-1m">One → Many</span></td>
+          <td class="rel-fk">Cart.UserId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">Category</td>
+          <td class="rel-to">Facility</td>
+          <td><span class="rel-type rt-1m">One → Many</span></td>
+          <td class="rel-fk">Facility.CategoryId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">Facility</td>
+          <td class="rel-to">UserFacility</td>
+          <td><span class="rel-type rt-1m">One → Many</span></td>
+          <td class="rel-fk">UserFacility.FacilityId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">Facility</td>
+          <td class="rel-to">Group</td>
+          <td><span class="rel-type rt-1m">One → Many</span></td>
+          <td class="rel-fk">Group.FacilityId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">Facility</td>
+          <td class="rel-to">Course</td>
+          <td><span class="rel-type rt-1m">One → Many</span></td>
+          <td class="rel-fk">Course.FacilityId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">Facility</td>
+          <td class="rel-to">PayFac</td>
+          <td><span class="rel-type rt-1m">One → Many</span></td>
+          <td class="rel-fk">PayFac.FacilityId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">Group</td>
+          <td class="rel-to">Course</td>
+          <td><span class="rel-type rt-1m">One → Many</span></td>
+          <td class="rel-fk">Course.GroupId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">Course</td>
+          <td class="rel-to">CourseBatches</td>
+          <td><span class="rel-type rt-1m">One → Many</span></td>
+          <td class="rel-fk">CourseBatches.CourseId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">Course</td>
+          <td class="rel-to">Sections</td>
+          <td><span class="rel-type rt-1m">One → Many</span></td>
+          <td class="rel-fk">Sections.CourseId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">Course</td>
+          <td class="rel-to">Lessons</td>
+          <td><span class="rel-type rt-1m">One → Many</span></td>
+          <td class="rel-fk">Lessons.CourseId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">Course</td>
+          <td class="rel-to">CourseContent</td>
+          <td><span class="rel-type rt-1m">One → Many</span></td>
+          <td class="rel-fk">CourseContent.CourseId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">CourseBatches</td>
+          <td class="rel-to">Sections</td>
+          <td><span class="rel-type rt-1m">One → Many</span></td>
+          <td class="rel-fk">Sections.CourseBatchId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">CourseBatches</td>
+          <td class="rel-to">Lessons</td>
+          <td><span class="rel-type rt-1m">One → Many</span></td>
+          <td class="rel-fk">Lessons.CourseBatchId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">CourseBatches</td>
+          <td class="rel-to">Enrollments</td>
+          <td><span class="rel-type rt-1m">One → Many</span></td>
+          <td class="rel-fk">Enrollments.CourseBatchId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">CourseBatches</td>
+          <td class="rel-to">CourseContent</td>
+          <td><span class="rel-type rt-1m">One → Many</span></td>
+          <td class="rel-fk">CourseContent.CourseBatchId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">Sections</td>
+          <td class="rel-to">Tasks</td>
+          <td><span class="rel-type rt-1m">One → Many</span></td>
+          <td class="rel-fk">Tasks.SectionId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">Sections</td>
+          <td class="rel-to">CourseContent</td>
+          <td><span class="rel-type rt-1m">One → Many</span></td>
+          <td class="rel-fk">CourseContent.SectionId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">Lessons</td>
+          <td class="rel-to">LessonLive</td>
+          <td><span class="rel-type rt-11">One → One</span></td>
+          <td class="rel-fk">Lessons.MeetingId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">Lessons</td>
+          <td class="rel-to">LessonRec</td>
+          <td><span class="rel-type rt-11">One → One</span></td>
+          <td class="rel-fk">Lessons.VideoId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">Tasks</td>
+          <td class="rel-to">TaskSubmissions</td>
+          <td><span class="rel-type rt-1m">One → Many</span></td>
+          <td class="rel-fk">TaskSubmissions.TaskId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">CourseContent</td>
+          <td class="rel-to">Lessons / Tasks</td>
+          <td><span class="rel-type rt-11">Polymorphic</span></td>
+          <td class="rel-fk">ContentType + ContentId</td>
+        </tr>
+        <tr>
+          <td class="rel-from">Cart</td>
+          <td class="rel-to">Coupon</td>
+          <td><span class="rel-type rt-m1">Many → One</span></td>
+          <td class="rel-fk">Cart.CouponId</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>Zumra Database ERD &nbsp;·&nbsp; 20 tables · 5 domains &nbsp;·&nbsp; 2026</footer>
+
+</body>
+
+</html>

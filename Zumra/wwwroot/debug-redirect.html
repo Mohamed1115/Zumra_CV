@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Google Redirect</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .info {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            display: block;
+            margin: 10px 0;
+            word-wrap: break-word;
+        }
+
+        .btn {
+            background: #4285f4;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background: #357ae8;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🔍 Debug Google OAuth Redirect URL</h1>
+
+    <div class="info">
+        <h3>Current URL:</h3>
+        <code id="currentUrl"></code>
+    </div>
+
+    <div class="info">
+        <h3>Expected Redirect URLs in Google Console:</h3>
+        <code>http://localhost:5243/Auth/Account/ExternalLoginCallback</code>
+        <code>https://localhost:7197/Auth/Account/ExternalLoginCallback</code>
+    </div>
+
+    <div class="info">
+        <h3>Test Direct Link:</h3>
+        <a href="/Auth/Account/ExternalLogin?provider=google&returnUrl=/" class="btn">
+            Try Google Login
+        </a>
+    </div>
+
+    <script>
+        document.getElementById('currentUrl').textContent = window.location.href;
+    </script>
+</body>
+
+</html>

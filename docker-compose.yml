@@ -1,0 +1,45 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: zumra-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=M0h@med!S3cure#2025
+    volumes:
+      - sqldata:/var/opt/mssql
+    ports:
+      - "1440:1433"
+    networks:
+      - zumra-network
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "M0h@med!S3cure#2025" -C -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  zumra-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: zumra-app
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=ZumraDB;User Id=sa;Password=M0h@med!S3cure#2025;Encrypt=yes;TrustServerCertificate=True;
+    ports:
+      - "5000:8080"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - zumra-network
+    restart: unless-stopped
+
+networks:
+  zumra-network:
+    driver: bridge
+
+volumes:
+  sqldata:
+    driver: local

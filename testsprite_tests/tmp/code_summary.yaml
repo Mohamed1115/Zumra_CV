@@ -1,0 +1,411 @@
+version: "2"
+type: backend
+tech_stack:
+  - C# / ASP.NET Core 8
+  - Entity Framework Core
+  - SQL Server
+  - ASP.NET Core Identity
+  - JWT Bearer Authentication
+  - Stripe Payments
+  - BunnyCDN
+features:
+  - name: Authentication & Account Management
+    description: User registration, login, email confirmation, OTP-based password reset, and Google OAuth login
+    files:
+      - Zumra/Controllers/AccountController.cs
+    endpoints:
+      - method: POST
+        path: /Auth/Account/Login
+        description: Login with username/email and password, returns JWT token
+        auth_required: false
+        request_schema:
+          body:
+            UserName: string
+            Password: string
+            RememberMe: boolean
+        response_schema:
+          "200": "{success: true, token: string}"
+          "400": "{success: false, message: string}"
+      - method: POST
+        path: /Auth/Account/Register
+        description: Register a new user account and send confirmation email
+        auth_required: false
+        request_schema:
+          body:
+            Email: string
+            Password: string
+            Name: string
+        response_schema:
+          "200": "{success: true, message: string}"
+          "400": "{success: false, errors: []}"
+      - method: GET
+        path: /Auth/Account/Confirm
+        description: Confirm user email via token link
+        auth_required: false
+        request_schema:
+          query:
+            token: string
+            id: string
+        response_schema:
+          "200": "{success: true}"
+          "400": "{success: false}"
+      - method: POST
+        path: /Auth/Account/ForgotPassword
+        description: Send OTP code to email for password reset
+        auth_required: false
+        request_schema:
+          body:
+            Email: string
+        response_schema:
+          "200": "{success: true, message: string}"
+      - method: POST
+        path: /Auth/Account/VerifyOTP
+        description: Verify OTP code for password reset
+        auth_required: false
+        request_schema:
+          body:
+            Email: string
+            Otp: string
+        response_schema:
+          "200": "{success: true}"
+          "400": "{success: false}"
+      - method: POST
+        path: /Auth/Account/ResetPassword
+        description: Reset user password after OTP verification
+        auth_required: false
+        request_schema:
+          body:
+            Email: string
+            Password: string
+        response_schema:
+          "200": "{success: true}"
+          "400": "{success: false}"
+      - method: GET
+        path: /Auth/Account/ExternalLogin
+        description: Initiate Google OAuth login
+        auth_required: false
+        request_schema:
+          query:
+            provider: string
+            returnUrl: string
+        response_schema:
+          "302": Challenge redirect
+      - method: GET
+        path: /Auth/Account/ExternalLoginCallback
+        description: Google OAuth callback, creates user if needed, returns JWT token
+        auth_required: false
+        response_schema:
+          "200": "{success: true, token: string, email: string, username: string}"
+
+  - name: Facility Management
+    description: CRUD operations for facilities (academies/centers), with Stripe payment for activation
+    files:
+      - Zumra/Controllers/FacilityController.cs
+    endpoints:
+      - method: GET
+        path: /Api/Facility/GetAll
+        description: Get all facilities
+        auth_required: false
+        response_schema:
+          "200": "{success: true, data: Facility[]}"
+      - method: GET
+        path: /Api/Facility/GetById/{id}
+        description: Get a single facility by ID
+        auth_required: false
+        response_schema:
+          "200": "{success: true, data: Facility}"
+          "404": "{success: false}"
+      - method: POST
+        path: /Api/Facility/Create
+        description: Create a new facility (form-data with optional image)
+        auth_required: true
+        request_schema:
+          form:
+            Name: string
+            Description: string
+            Type: string
+            CategoryId: integer
+            Image: file (optional)
+        response_schema:
+          "201": "{success: true, data: {id, name, category}}"
+          "400": "{success: false}"
+      - method: PUT
+        path: /Api/Facility/Update/{id}
+        description: Update a facility (SuperAdmin only)
+        auth_required: true
+        response_schema:
+          "200": "{success: true}"
+          "403": Forbidden
+          "404": "{success: false}"
+      - method: DELETE
+        path: /Api/Facility/Delete
+        description: Delete a facility (SuperAdmin only)
+        auth_required: true
+        response_schema:
+          "200": "{success: true}"
+          "403": Forbidden
+      - method: POST
+        path: /Api/Facility/Pay
+        description: Create Stripe checkout session to activate facility
+        auth_required: true
+        response_schema:
+          "200": "{CheckoutUrl: string}"
+      - method: GET
+        path: /Api/Facility/Success
+        description: Stripe payment success callback - activates facility
+        auth_required: false
+        response_schema:
+          "200": "{success: true}"
+      - method: GET
+        path: /Api/Facility/Cancel
+        description: Stripe payment cancel callback
+        auth_required: false
+        response_schema:
+          "200": "{success: false}"
+    depends_on:
+      - Authentication & Account Management
+
+  - name: Category Management
+    description: CRUD operations for course categories
+    files:
+      - Zumra/Controllers/CategoryController.cs
+    endpoints:
+      - method: GET
+        path: /Api/Category/GetAll
+        description: Get all categories
+        auth_required: false
+        response_schema:
+          "200": Category[]
+      - method: POST
+        path: /Api/Category/Create
+        description: Create new category
+        auth_required: true
+        response_schema:
+          "200": Category
+      - method: PUT
+        path: /Api/Category/Update/{id}
+        description: Update category
+        auth_required: true
+        response_schema:
+          "200": Category
+      - method: DELETE
+        path: /Api/Category/Delete/{id}
+        description: Delete category
+        auth_required: true
+        response_schema:
+          "200": "{success: true}"
+    depends_on:
+      - Authentication & Account Management
+
+  - name: Course Management
+    description: CRUD operations for courses within a facility
+    files:
+      - Zumra/Controllers/CourseController.cs
+    endpoints:
+      - method: GET
+        path: /Api/Course/GetAll
+        description: Get all courses
+        auth_required: false
+        response_schema:
+          "200": Course[]
+      - method: GET
+        path: /Api/Course/GetById/{id}
+        description: Get course by ID
+        auth_required: false
+        response_schema:
+          "200": Course
+      - method: POST
+        path: /Api/Course/Create
+        description: Create new course
+        auth_required: true
+        response_schema:
+          "200": Course
+      - method: PUT
+        path: /Api/Course/Update/{id}
+        description: Update course
+        auth_required: true
+        response_schema:
+          "200": Course
+      - method: DELETE
+        path: /Api/Course/Delete/{id}
+        description: Delete course
+        auth_required: true
+        response_schema:
+          "200": "{success: true}"
+    depends_on:
+      - Facility Management
+      - Category Management
+
+  - name: Batch Management
+    description: Manage course batches (groups of students per course)
+    files:
+      - Zumra/Controllers/BatchController.cs
+    endpoints:
+      - method: GET
+        path: /Api/Batch/GetAll
+        description: Get all batches for a course
+        auth_required: true
+        response_schema:
+          "200": Batch[]
+      - method: POST
+        path: /Api/Batch/Create
+        description: Create a new batch
+        auth_required: true
+        response_schema:
+          "200": Batch
+      - method: PUT
+        path: /Api/Batch/Update/{id}
+        description: Update a batch
+        auth_required: true
+        response_schema:
+          "200": Batch
+      - method: DELETE
+        path: /Api/Batch/Delete/{id}
+        description: Delete a batch
+        auth_required: true
+        response_schema:
+          "200": "{success: true}"
+    depends_on:
+      - Course Management
+
+  - name: Group Management
+    description: Manage student groups within batches
+    files:
+      - Zumra/Controllers/GroupController.cs
+    endpoints:
+      - method: GET
+        path: /Api/Group/GetAll
+        description: Get all groups
+        auth_required: true
+        response_schema:
+          "200": Group[]
+      - method: POST
+        path: /Api/Group/Create
+        description: Create new group
+        auth_required: true
+        response_schema:
+          "200": Group
+      - method: PUT
+        path: /Api/Group/Update/{id}
+        description: Update group
+        auth_required: true
+        response_schema:
+          "200": Group
+      - method: DELETE
+        path: /Api/Group/Delete/{id}
+        description: Delete group
+        auth_required: true
+        response_schema:
+          "200": "{success: true}"
+    depends_on:
+      - Batch Management
+
+  - name: Section Management
+    description: Manage course content sections
+    files:
+      - Zumra/Controllers/SectionController.cs
+    endpoints:
+      - method: GET
+        path: /Api/Section/GetAll
+        description: Get all sections for a course
+        auth_required: true
+        response_schema:
+          "200": Section[]
+      - method: POST
+        path: /Api/Section/Create
+        description: Create new section
+        auth_required: true
+        response_schema:
+          "200": Section
+      - method: PUT
+        path: /Api/Section/Update/{id}
+        description: Update section
+        auth_required: true
+        response_schema:
+          "200": Section
+      - method: DELETE
+        path: /Api/Section/Delete/{id}
+        description: Delete section
+        auth_required: true
+        response_schema:
+          "200": "{success: true}"
+    depends_on:
+      - Course Management
+
+  - name: Lesson Management
+    description: Manage lessons within course sections, including recorded and live lessons
+    files:
+      - Zumra/Controllers/LessonController.cs
+    endpoints:
+      - method: GET
+        path: /Api/Lesson/GetAll
+        description: Get all lessons
+        auth_required: true
+        response_schema:
+          "200": Lesson[]
+      - method: POST
+        path: /Api/Lesson/Create
+        description: Create new lesson
+        auth_required: true
+        response_schema:
+          "200": Lesson
+      - method: PUT
+        path: /Api/Lesson/Update/{id}
+        description: Update lesson
+        auth_required: true
+        response_schema:
+          "200": Lesson
+      - method: DELETE
+        path: /Api/Lesson/Delete/{id}
+        description: Delete lesson
+        auth_required: true
+        response_schema:
+          "200": "{success: true}"
+    depends_on:
+      - Section Management
+
+  - name: Task Management
+    description: Manage assignments/tasks within course sections
+    files:
+      - Zumra/Controllers/TaskController.cs
+    endpoints:
+      - method: GET
+        path: /Api/Task/GetAll
+        description: Get all tasks
+        auth_required: true
+        response_schema:
+          "200": Task[]
+      - method: POST
+        path: /Api/Task/Create
+        description: Create new task
+        auth_required: true
+        response_schema:
+          "200": Task
+      - method: PUT
+        path: /Api/Task/Update/{id}
+        description: Update task
+        auth_required: true
+        response_schema:
+          "200": Task
+      - method: DELETE
+        path: /Api/Task/Delete/{id}
+        description: Delete task
+        auth_required: true
+        response_schema:
+          "200": "{success: true}"
+    depends_on:
+      - Section Management
+
+known_limitations:
+  - issue: Email confirmation required before login (ASPNET Identity setting)
+    location: Zumra/Program.cs
+    impact: Tests that attempt to login with newly registered users will fail unless email is confirmed
+  - issue: Stripe payment integration requires live keys for facility activation
+    location: Zumra/Controllers/FacilityController.cs
+    impact: Pay/Success endpoints require valid Stripe configuration
+  - issue: Google OAuth requires external configuration
+    location: Zumra/Controllers/AccountController.cs
+    impact: ExternalLogin/ExternalLoginCallback endpoints require Google credentials
+  - issue: JWT auth required for most write operations
+    location: Multiple controllers
+    impact: Tests for create/update/delete endpoints need a valid JWT token

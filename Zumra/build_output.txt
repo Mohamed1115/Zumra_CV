@@ -1,0 +1,29 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+/home/mohamed/Code/Net/WEP/Zumra/Zumra/Application/Services/Bunny/BunnyService.cs(6,7): warning CS0105: The using directive for 'Zumra.Application.Interfaces.Bunny' appeared previously in this namespace [/home/mohamed/Code/Net/WEP/Zumra/Zumra/Zumra.csproj]
+/home/mohamed/Code/Net/WEP/Zumra/Zumra/Controllers/LessonController.cs(11,7): warning CS0105: The using directive for 'Zumra.DTOs.Request.Jitsi' appeared previously in this namespace [/home/mohamed/Code/Net/WEP/Zumra/Zumra/Zumra.csproj]
+/home/mohamed/Code/Net/WEP/Zumra/Zumra/Program.cs(43,7): warning CS0105: The using directive for 'Zumra.Application.Services.TaskSubmissions' appeared previously in this namespace [/home/mohamed/Code/Net/WEP/Zumra/Zumra/Zumra.csproj]
+/home/mohamed/Code/Net/WEP/Zumra/Zumra/Application/Services/Bunny/BunnyService.cs(16,29): error CS0102: The type 'BunnyService' already contains a definition for '_managementApiKey' [/home/mohamed/Code/Net/WEP/Zumra/Zumra/Zumra.csproj]
+/home/mohamed/Code/Net/WEP/Zumra/Zumra/Migrations/20251224193058_polici.cs(9,26): warning CS8981: The type name 'polici' only contains lower-cased ascii characters. Such names may become reserved for the language. [/home/mohamed/Code/Net/WEP/Zumra/Zumra/Zumra.csproj]
+/home/mohamed/Code/Net/WEP/Zumra/Zumra/Migrations/20251224193058_polici.Designer.cs(16,19): warning CS8981: The type name 'polici' only contains lower-cased ascii characters. Such names may become reserved for the language. [/home/mohamed/Code/Net/WEP/Zumra/Zumra/Zumra.csproj]
+/home/mohamed/Code/Net/WEP/Zumra/Zumra/Controllers/AccountController.cs(469,100): warning CS8625: Cannot convert null literal to non-nullable reference type. [/home/mohamed/Code/Net/WEP/Zumra/Zumra/Zumra.csproj]
+/home/mohamed/Code/Net/WEP/Zumra/Zumra/Controllers/AccountController.cs(496,79): warning CS8625: Cannot convert null literal to non-nullable reference type. [/home/mohamed/Code/Net/WEP/Zumra/Zumra/Zumra.csproj]
+/home/mohamed/Code/Net/WEP/Zumra/Zumra/Controllers/AccountController.cs(496,106): warning CS8625: Cannot convert null literal to non-nullable reference type. [/home/mohamed/Code/Net/WEP/Zumra/Zumra/Zumra.csproj]
+/home/mohamed/Code/Net/WEP/Zumra/Zumra/IRepositories/IUnitOfWork.cs(29,10): warning CS0108: 'IUnitOfWork.Dispose()' hides inherited member 'IDisposable.Dispose()'. Use the new keyword if hiding was intended. [/home/mohamed/Code/Net/WEP/Zumra/Zumra/Zumra.csproj]
+
+Build FAILED.
+
+/home/mohamed/Code/Net/WEP/Zumra/Zumra/Application/Services/Bunny/BunnyService.cs(6,7): warning CS0105: The using directive for 'Zumra.Application.Interfaces.Bunny' appeared previously in this namespace [/home/mohamed/Code/Net/WEP/Zumra/Zumra/Zumra.csproj]
+/home/mohamed/Code/Net/WEP/Zumra/Zumra/Controllers/LessonController.cs(11,7): warning CS0105: The using directive for 'Zumra.DTOs.Request.Jitsi' appeared previously in this namespace [/home/mohamed/Code/Net/WEP/Zumra/Zumra/Zumra.csproj]
+/home/mohamed/Code/Net/WEP/Zumra/Zumra/Program.cs(43,7): warning CS0105: The using directive for 'Zumra.Application.Services.TaskSubmissions' appeared previously in this namespace [/home/mohamed/Code/Net/WEP/Zumra/Zumra/Zumra.csproj]
+/home/mohamed/Code/Net/WEP/Zumra/Zumra/Migrations/20251224193058_polici.cs(9,26): warning CS8981: The type name 'polici' only contains lower-cased ascii characters. Such names may become reserved for the language. [/home/mohamed/Code/Net/WEP/Zumra/Zumra/Zumra.csproj]
+/home/mohamed/Code/Net/WEP/Zumra/Zumra/Migrations/20251224193058_polici.Designer.cs(16,19): warning CS8981: The type name 'polici' only contains lower-cased ascii characters. Such names may become reserved for the language. [/home/mohamed/Code/Net/WEP/Zumra/Zumra/Zumra.csproj]
+/home/mohamed/Code/Net/WEP/Zumra/Zumra/Controllers/AccountController.cs(469,100): warning CS8625: Cannot convert null literal to non-nullable reference type. [/home/mohamed/Code/Net/WEP/Zumra/Zumra/Zumra.csproj]
+/home/mohamed/Code/Net/WEP/Zumra/Zumra/Controllers/AccountController.cs(496,79): warning CS8625: Cannot convert null literal to non-nullable reference type. [/home/mohamed/Code/Net/WEP/Zumra/Zumra/Zumra.csproj]
+/home/mohamed/Code/Net/WEP/Zumra/Zumra/Controllers/AccountController.cs(496,106): warning CS8625: Cannot convert null literal to non-nullable reference type. [/home/mohamed/Code/Net/WEP/Zumra/Zumra/Zumra.csproj]
+/home/mohamed/Code/Net/WEP/Zumra/Zumra/IRepositories/IUnitOfWork.cs(29,10): warning CS0108: 'IUnitOfWork.Dispose()' hides inherited member 'IDisposable.Dispose()'. Use the new keyword if hiding was intended. [/home/mohamed/Code/Net/WEP/Zumra/Zumra/Zumra.csproj]
+/home/mohamed/Code/Net/WEP/Zumra/Zumra/Application/Services/Bunny/BunnyService.cs(16,29): error CS0102: The type 'BunnyService' already contains a definition for '_managementApiKey' [/home/mohamed/Code/Net/WEP/Zumra/Zumra/Zumra.csproj]
+    9 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:01.30

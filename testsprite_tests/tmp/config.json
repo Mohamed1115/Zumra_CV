@@ -1,0 +1,21 @@
+{
+  "status": "commited",
+  "type": "backend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:5243",
+  "backendAuthType": "basic token",
+  "backendUsername": "SuperAdmin@gmail.com",
+  "backendPassword": "Admin$1234",
+  "executionArgs": {
+    "projectName": "Zumra",
+    "projectPath": "/home/mohamed/Code/Net/WEP/Zumra",
+    "testIds": [],
+    "additionalInstruction": "Please execute the 24 tests defined in our plan for Category, Course, Batch, Group, Section, Lesson, and Task controllers. For authenticated endpoints, if the test requires a token, attempt to login first or use a known test user if available. Focus on verifying 401 Unauthorized for unauthenticated requests and 404 for non-existent entities. \nPlease note that the database might be empty, so handle 404/Empty results as successful validation if that's what's expected for that test case.\nRun in development mode.\n",
+    "serverMode": "development",
+    "envs": {
+      "API_KEY": "sk-user-T67zTJmvqAbS10Nh5yuia-FImRZZtOs_BzQmm_88msy7r_jShhsp2J4AAbkv3q80u3wlGRD3D5eFmLpuUI4IsaTUTrThcgrVRPziRAaCnXZ8j_diTUho0KW1QwyCi_cu6Ao"
+    }
+  },
+  "serverPort": 34357,
+  "proxy": "http://2ba7efb1-c992-4730-95e5-98eebb476af0:vM965r972nR0tzvuZMZhfwowuHtMJ5Ah@tun.testsprite.com:8080"
+}

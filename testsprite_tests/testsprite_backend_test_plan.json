@@ -1,0 +1,122 @@
+[
+  {
+    "id": "TC001",
+    "title": "get api category returns all categories",
+    "description": "Test GET /Api/Category endpoint. Verify it returns 200 with success=true and data array. No auth required."
+  },
+  {
+    "id": "TC002",
+    "title": "get api category by id returns single category",
+    "description": "Test GET /Api/Category/{id} with id=1. Verify 200 with success=true and data object. Also test with id=999999 to verify it still returns 200 (the service returns null without 404, just check response structure)."
+  },
+  {
+    "id": "TC003",
+    "title": "post api category create requires admin role",
+    "description": "Test POST /Api/Category without Authorization header. Verify it returns 401 Unauthorized. The endpoint requires SuperAdmin or Admin role."
+  },
+  {
+    "id": "TC004",
+    "title": "put api category update requires admin role",
+    "description": "Test PUT /Api/Category/1 without Authorization header. Verify it returns 401 Unauthorized. The endpoint requires SuperAdmin or Admin role."
+  },
+  {
+    "id": "TC005",
+    "title": "delete api category requires admin role",
+    "description": "Test DELETE /Api/Category/1 without Authorization header. Verify it returns 401 Unauthorized. The endpoint requires SuperAdmin or Admin role."
+  },
+  {
+    "id": "TC006",
+    "title": "get api course returns all courses",
+    "description": "Test GET /Api/Course endpoint. Verify it returns 200 with success=true and data array. No auth required."
+  },
+  {
+    "id": "TC007",
+    "title": "get api course by id returns 404 for non-existent course",
+    "description": "Test GET /Api/Course/999999 (non-existent id). Verify it returns a 404 Not Found with success=false and message 'Course not found'."
+  },
+  {
+    "id": "TC008",
+    "title": "post api course create requires authentication",
+    "description": "Test POST /Api/Course/1 (Create course for facility id=1) without Authorization header. Verify it returns 401 Unauthorized."
+  },
+  {
+    "id": "TC009",
+    "title": "put api course update requires authentication",
+    "description": "Test PUT /Api/Course/1/1 (UpdateCourse with FacilityId=1, CourseId=1) without Authorization header. Verify it returns 401 Unauthorized."
+  },
+  {
+    "id": "TC010",
+    "title": "delete api course delete requires authentication",
+    "description": "Test DELETE /Api/Course/1/1 without Authorization header. Verify it returns 401 Unauthorized."
+  },
+  {
+    "id": "TC011",
+    "title": "get api batch course returns all batches for course",
+    "description": "Test GET /Api/Batch/Course/1 (get all batches for courseId=1). Verify it returns 200 with success and Data fields. No auth required. Test with courseId=999999 to also verify it handles empty results gracefully."
+  },
+  {
+    "id": "TC012",
+    "title": "get api batch by id returns batch",
+    "description": "Test GET /Api/Batch/Batch/999999 (non-existent batch id). Verify the response format (success and Data fields) — the BatchController uses success='True' string not boolean."
+  },
+  {
+    "id": "TC013",
+    "title": "post api batch create returns 404 for non-existent facility",
+    "description": "Test POST /Api/Batch/999999 (Create batch for non-existent facilityId=999999) with JSON body containing CourseId, Title, StartDate (e.g. 2026-01-01), EndDate (e.g. 2026-12-31), Capacity (30), Status ('Active'). Verify it returns 404 with success=false and message 'Facility not found'. No auth needed to reach this check."
+  },
+  {
+    "id": "TC014",
+    "title": "get api group returns all groups for facility",
+    "description": "Test GET /api/Group/1 (GetGroups for facilityId=1). Verify it returns 200 with success=true and data array. No auth required. Test with facilityId=999999 to verify it still returns 200 with empty data."
+  },
+  {
+    "id": "TC015",
+    "title": "get api group by id returns group",
+    "description": "Test GET /api/Group/1/1 (GetGroup for facilityId=1, groupId=1). Verify it returns 200 with success and data fields. No auth required."
+  },
+  {
+    "id": "TC016",
+    "title": "post api group create requires authentication",
+    "description": "Test POST /api/Group/1 (CreateGroup for facilityId=1) without Authorization header. Verify it returns 401 Unauthorized."
+  },
+  {
+    "id": "TC017",
+    "title": "delete api group delete requires authentication",
+    "description": "Test DELETE /api/Group/1/1 without Authorization header. Verify it returns 401 Unauthorized."
+  },
+  {
+    "id": "TC018",
+    "title": "post api section create returns 404 for non-existent facility",
+    "description": "Test POST /Api/Section/999999/1 (Create section for facilityId=999999, batchId=1) with JSON body containing Name='Test Section', Order=1, CourseId=1, CourseBatchId=1. Verify it returns 404 with success=false and message 'Facility not found'. No auth needed to reach this check."
+  },
+  {
+    "id": "TC019",
+    "title": "delete api section delete returns 404 for non-existent facility",
+    "description": "Test DELETE /Api/Section/999999/1/1 (facilityId=999999, batchId=1, sectionId=1). Verify it returns 404 with success=false and message 'Facility not found'. No auth needed to reach this check."
+  },
+  {
+    "id": "TC020",
+    "title": "post api lesson add returns 404 for non-existent facility",
+    "description": "Test POST /Api/Lesson/Add/999999 (Add lesson for facilityId=999999) with form-data containing Name='Test Lesson', SectionId=1, Order=1. Verify it returns 404 with success=false and message 'Facility not found'. No auth needed to reach facility check."
+  },
+  {
+    "id": "TC021",
+    "title": "delete api lesson delete returns 404 for non-existent facility",
+    "description": "Test DELETE /Api/Lesson/Delete/999999/1 (facilityId=999999, lessonId=1). Verify it returns 404 with success=false and message 'Facility not found'."
+  },
+  {
+    "id": "TC022",
+    "title": "post api task add returns 404 for non-existent facility",
+    "description": "Test POST /Api/Task/Add/999999 (Add task for facilityId=999999) with form-data containing Name='Test Task', SectionId=1, Description='Test'. Verify it returns 404 with success=false and message 'Facility not found'."
+  },
+  {
+    "id": "TC023",
+    "title": "delete api task delete returns 404 for non-existent facility",
+    "description": "Test DELETE /Api/Task/Delete/999999/1 (facilityId=999999, taskId=1). Verify it returns 404 with success=false and message 'Facility not found'."
+  },
+  {
+    "id": "TC024",
+    "title": "post api task submit returns 200",
+    "description": "Test POST /Api/Task/Submit/1 (Submit task with id=1). The current implementation just returns Ok() without any logic. Verify it returns 200. No auth required on this endpoint."
+  }
+]
